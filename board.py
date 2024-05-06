@@ -97,7 +97,7 @@ class TosBoard:
                     for delta in range(3):
                         removed[rowIdx + delta][colIdx] = stone1.type
 
-            # calulate the number of stones removed and change the board
+            # calculate the number of stones removed and change the board
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols)
             ):
@@ -147,7 +147,7 @@ class TosBoard:
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo
 
-    def calulateScore(self, stones, combo):
+    def calculateScore(self, stones, combo):
         return 100 * ((stones + combo) * 0.25)
 
 
