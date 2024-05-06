@@ -176,11 +176,13 @@ class TosBoard:
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo
 
+    def calulateScore(self, stones, combo):
+        return 100 * ((stones + combo) * 0.25)
+
 
 if __name__ == "__main__":
     board = TosBoard()
     board.initFromFile("input.txt")
     print(board)
-    r, c = board.evaluate()
 
     # print(board)
