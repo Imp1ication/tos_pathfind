@@ -10,7 +10,7 @@ class TosBoard:
         self.numOfRows = 5
         self.numOfCols = 6
         self.runestones = [
-            [Runestone()] * self.numOfCols for row in range(self.numOfRows)
+            [Runestone()] * self.numOfCols for _ in range(self.numOfRows)
         ]
         self.currentPosition = [0, 0]
         self.previousPosition = self.currentPosition
@@ -20,8 +20,8 @@ class TosBoard:
 
     def boardToString(self, _board):
         string = ""
-        for row in range(self.numOfRows):
-            for col in range(self.numOfCols):
+        for row in range(len(_board)):
+            for col in range(len(_board[0])):
                 stone = _board[row][col]
                 string = string + str(stone)
             string = string + "\n"
@@ -73,6 +73,7 @@ class TosBoard:
             rm_count = 0
             combo = 0
 
+            # determine if the stone would be removed
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols - 2)
             ):
@@ -97,7 +98,7 @@ class TosBoard:
                     for delta in range(3):
                         removed[rowIdx + delta][colIdx] = stone1.type
 
-            # calculate the number of stones removed and change the board
+            # calculate the number of stones removed and update the board
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols)
             ):
@@ -142,7 +143,7 @@ class TosBoard:
                                 board[r][colIdx] = Runestone()
                                 break
 
-        # print(self.boardToString(board))
+            print(self.boardToString(board))
         # print("Total Removed: ", total_rm_count)
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo
@@ -155,5 +156,6 @@ if __name__ == "__main__":
     board = TosBoard()
     board.initFromFile("input.txt")
     print(board)
+    board.evaluate()
 
     # print(board)
