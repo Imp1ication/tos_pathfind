@@ -18,11 +18,6 @@ class TosBoard:
     def __repr__(self):
         return self.boardToString(self.runestones)
 
-    def _swap(self, _pos1, _pos2):
-        swapTmp = self.runestones[_pos1[0]][_pos1[1]]
-        self.runestones[_pos1[0]][_pos1[1]] = self.runestones[_pos2[0]][_pos2[1]]
-        self.runestones[_pos2[0]][_pos2[1]] = swapTmp
-
     def boardToString(self, _board):
         string = ""
         for row in range(self.numOfRows):
@@ -66,30 +61,6 @@ class TosBoard:
                     if token == "H":
                         stone = Runestone(StoneType.HEALTH)
                     self.runestones[lineIdx][tokenIdx] = stone
-
-    def setCurrentPosition(self, _pos):
-        self.runestones[self.currentPosition[0]][self.currentPosition[1]].status = " "
-        self.currentPosition = _pos
-        self.previousPosition = self.currentPosition
-        self.runestones[self.currentPosition[0]][self.currentPosition[1]].status = "*"
-
-    def getSuccessorList(self):
-        successorList = list()
-        for move in list(Move):
-            newPosition = [sum(z) for z in zip(list(move.value), self.currentPosition)]
-            if newPosition == self.previousPosition:
-                continue
-            if (
-                0 <= newPosition[0] < self.numOfRows
-                and 0 <= newPosition[1] < self.numOfCols
-            ):
-                newBoard = TosBoard()
-                newBoard.runestones = [copy.copy(row) for row in self.runestones]
-                newBoard.currentPosition = newPosition
-                newBoard.previousPosition = self.currentPosition
-                newBoard._swap(newPosition, self.currentPosition)
-                successorList.append((newBoard, move))
-        return successorList
 
     def evaluate(self):
         # determine if the stone would be removed
