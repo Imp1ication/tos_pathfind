@@ -15,10 +15,11 @@ class StoneType(Enum):
     FIRE = "fire"
     EARTH = "earth"
     HEALTH = "health"
+    NONE = "none"
 
 
 class Runestone:
-    def __init__(self, _type=StoneType.HEALTH, _status=" "):
+    def __init__(self, _type=StoneType.NONE, _status=" "):
         self.type = _type
         self.status = _status
 
@@ -35,3 +36,5 @@ class Runestone:
             return "\x1b[0;32;40m E[{}] \x1b[0m".format(self.status)
         if self.type == StoneType.HEALTH:
             return "\x1b[0;37;40m H[{}] \x1b[0m".format(self.status)
+        if self.type == StoneType.NONE:
+            return "\x1b[0;47;30m N[{}] \x1b[0m".format(self.status)
