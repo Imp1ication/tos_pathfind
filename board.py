@@ -1,6 +1,5 @@
 import random
 from collections import defaultdict
-import math
 import copy
 import queue
 import itertools
@@ -26,7 +25,7 @@ class TosBoard:
             string = string + "\n"
         return string
 
-    def _dropStones(self):
+    def _drop_stones(self):
         stones = self.runestones
 
         # check if stone dropped
@@ -39,7 +38,7 @@ class TosBoard:
                             stones[r][colIdx] = Runestone()
                             break
 
-    def initFromRandom(self):
+    def init_from_random(self):
         for rowIdx, colIdx in itertools.product(
             range(self.numOfRows), range(self.numOfCols)
         ):
@@ -55,7 +54,7 @@ class TosBoard:
         self.previousPosition = self.currentPosition
         self.runestones[self.currentPosition[0]][self.currentPosition[1]].status = "*"
 
-    def initFromFile(self, _filePath):
+    def init_from_file(self, _filePath):
         with open(_filePath, "r") as fin:
             for lineIdx, line in enumerate(fin):
                 tokenList = line.strip().split()
@@ -77,7 +76,7 @@ class TosBoard:
                         stone = Runestone(StoneType.HEALTH)
                     self.runestones[lineIdx][tokenIdx] = stone
 
-    def evaluate(self):
+    def eliminate_stones(self):
         # determine if the stone would be removed
         tos_state = copy.deepcopy(self)
         stones = tos_state.runestones
@@ -150,17 +149,17 @@ class TosBoard:
             total_combo += combo
 
             # check if stone dropped
-            tos_state._dropStones()
+            tos_state._drop_stones()
 
             # print(tos_state)
         # print("Total Removed: ", total_rm_count)
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo, tos_state
 
-    def calculateScore(self, stones, combo):
+    def calculate_score(self, stones, combo):
         return 100 * ((stones + combo) * 0.25)
 
-    def calculateDensity(self):
+    def calculate_stone_density(self):
         stone_positions = defaultdict(list)
 
         # get all stone positions
@@ -196,7 +195,7 @@ class TosBoard:
 
 if __name__ == "__main__":
     board = TosBoard()
-    board.initFromFile("input2.txt")
+    board.init_from_file("input2.txt")
 
     print(board)
-    board.calculateDensity()
+    board.calculate_stone_density()
