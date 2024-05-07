@@ -1,4 +1,6 @@
 import random
+from collections import defaultdict
+import math
 import copy
 import queue
 import itertools
@@ -158,12 +160,43 @@ class TosBoard:
     def calculateScore(self, stones, combo):
         return 100 * ((stones + combo) * 0.25)
 
+    def calculateDensity(self):
+        stone_positions = defaultdict(list)
+
+        # get all stone positions
+        for row in range(self.numOfRows):
+            for col in range(self.numOfCols):
+                stone = self.runestones[row][col]
+                if stone.type is not StoneType.NONE:
+                    stone_positions[stone.type].append((row, col))
+
+        # calculate average manhattan distance between stones
+        avg_distances = {}
+
+        for stone_type, positions in stone_positions.items():
+            total_distance = 0
+            num_pairs = 0
+            for i in range(len(positions)):
+                for j in range(i + 1, len(positions)):
+                    x1, y1 = positions[i]
+                    x2, y2 = positions[j]
+                    distance = abs(x1 - x2) + abs(y1 - y2)
+                    total_distance += distance
+                    num_pairs += 1
+            avg_distance = total_distance / num_pairs if num_pairs > 0 else 0
+            avg_distances[stone_type] = avg_distance
+
+        # print average distances
+        # for stone_type, avg_distance in avg_distances.items():
+        #     print(f"Average distance for {stone_type}: {avg_distance}")
+
+        # add up all average distances
+        return sum(avg_distances.values())
+
 
 if __name__ == "__main__":
     board = TosBoard()
-    board.initFromFile("input.txt")
+    board.initFromFile("input2.txt")
+
     print(board)
-    r, c, b = board.evaluate()
-    print("Total Removed: ", r)
-    print("Total Combo: ", c)
-    print(b)
+    board.calculateDensity()
