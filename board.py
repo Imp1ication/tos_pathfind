@@ -76,6 +76,27 @@ class TosBoard:
                         stone = Runestone(StoneType.HEALTH)
                     self.runestones[lineIdx][tokenIdx] = stone
 
+    # -- Functional Methods --#
+    def shuffle_stones(self):
+        stones = [
+            stone.type
+            for row in self.runestones
+            for stone in row
+            if stone.type != StoneType.NONE
+        ]
+        random.shuffle(stones)
+
+        new_board = copy.deepcopy(self)
+        idx = 0
+        for row in range(new_board.numOfRows):
+            for col in range(new_board.numOfCols):
+                if new_board.runestones[row][col].type != StoneType.NONE:
+                    new_board.runestones[row][col] = Runestone(stones[idx])
+                    idx += 1
+
+        return new_board
+
+    # -- Method to evaluate the board --#
     def eliminate_stones(self):
         # determine if the stone would be removed
         tos_state = copy.deepcopy(self)
@@ -182,7 +203,7 @@ class TosBoard:
                     distance = abs(x1 - x2) + abs(y1 - y2)
                     total_distance += distance
                     num_pairs += 1
-            avg_distance = total_distance / num_pairs if num_pairs > 0 else 0
+            avg_distance = total_distance / num_pairs if num_pairs > 0 else 1
             avg_distances[stone_type] = avg_distance
 
         # print average distances
@@ -198,4 +219,3 @@ if __name__ == "__main__":
     board.init_from_file("input2.txt")
 
     print(board)
-    board.calculate_stone_density()
