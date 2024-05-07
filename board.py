@@ -2,7 +2,7 @@ import random
 import copy
 import queue
 import itertools
-from basic import Move, StoneType, Runestone
+from basic import StoneType, Runestone
 
 
 class TosBoard:
@@ -16,16 +16,26 @@ class TosBoard:
         self.previousPosition = self.currentPosition
 
     def __repr__(self):
-        return self.boardToString(self.runestones)
-
-    def boardToString(self, _board):
         string = ""
-        for row in range(len(_board)):
-            for col in range(len(_board[0])):
-                stone = _board[row][col]
+        for row in range(self.numOfRows):
+            for col in range(self.numOfCols):
+                stone = self.runestones[row][col]
                 string = string + str(stone)
             string = string + "\n"
         return string
+
+    def _dropStones(self):
+        stones = self.runestones
+
+        # check if stone dropped
+        for colIdx in range(self.numOfCols):
+            for rowIdx in range(self.numOfRows - 1, 0, -1):
+                if stones[rowIdx][colIdx].type == StoneType.NONE:
+                    for r in range(rowIdx - 1, -1, -1):
+                        if stones[r][colIdx].type != StoneType.NONE:
+                            stones[rowIdx][colIdx] = stones[r][colIdx]
+                            stones[r][colIdx] = Runestone()
+                            break
 
     def initFromRandom(self):
         for rowIdx, colIdx in itertools.product(
@@ -64,8 +74,9 @@ class TosBoard:
 
     def evaluate(self):
         # determine if the stone would be removed
-        board = self.runestones.copy()
-        removed = [[StoneType.NONE] * self.numOfCols for row in range(self.numOfRows)]
+        temp_tos = copy.deepcopy(self)
+        stones = temp_tos.runestones
+        rm_stones = [[StoneType.NONE] * self.numOfCols for _ in range(self.numOfRows)]
         total_rm_count = 0
         total_combo = 0
 
@@ -77,34 +88,34 @@ class TosBoard:
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols - 2)
             ):
-                if board[rowIdx][colIdx].type == StoneType.NONE:
+                if stones[rowIdx][colIdx].type == StoneType.NONE:
                     continue
-                stone1 = board[rowIdx][colIdx]
-                stone2 = board[rowIdx][colIdx + 1]
-                stone3 = board[rowIdx][colIdx + 2]
+                stone1 = stones[rowIdx][colIdx]
+                stone2 = stones[rowIdx][colIdx + 1]
+                stone3 = stones[rowIdx][colIdx + 2]
                 if stone1.type == stone2.type == stone3.type:
                     for delta in range(3):
-                        removed[rowIdx][colIdx + delta] = stone1.type
+                        rm_stones[rowIdx][colIdx + delta] = stone1.type
 
             for colIdx, rowIdx in itertools.product(
                 range(self.numOfCols), range(self.numOfRows - 2)
             ):
-                if board[rowIdx][colIdx].type == StoneType.NONE:
+                if stones[rowIdx][colIdx].type == StoneType.NONE:
                     continue
-                stone1 = board[rowIdx][colIdx]
-                stone2 = board[rowIdx + 1][colIdx]
-                stone3 = board[rowIdx + 2][colIdx]
+                stone1 = stones[rowIdx][colIdx]
+                stone2 = stones[rowIdx + 1][colIdx]
+                stone3 = stones[rowIdx + 2][colIdx]
                 if stone1.type == stone2.type == stone3.type:
                     for delta in range(3):
-                        removed[rowIdx + delta][colIdx] = stone1.type
+                        rm_stones[rowIdx + delta][colIdx] = stone1.type
 
             # calculate the number of stones removed and update the board
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols)
             ):
-                if removed[rowIdx][colIdx] != StoneType.NONE:
+                if rm_stones[rowIdx][colIdx] != StoneType.NONE:
                     rm_count += 1
-                    board[rowIdx][colIdx] = Runestone()
+                    stones[rowIdx][colIdx] = Runestone()
 
             if rm_count == 0:
                 break
@@ -113,37 +124,30 @@ class TosBoard:
             for rowIdx, colIdx in itertools.product(
                 range(self.numOfRows), range(self.numOfCols)
             ):
-                if removed[rowIdx][colIdx] != StoneType.NONE:
+                if rm_stones[rowIdx][colIdx] != StoneType.NONE:
                     combo = combo + 1
-                    t = removed[rowIdx][colIdx]
+                    t = rm_stones[rowIdx][colIdx]
                     q = queue.Queue()
                     q.put((rowIdx, colIdx))
                     while not q.empty():
                         (r, c) = q.get()
-                        removed[r][c] = StoneType.NONE
-                        if r + 1 < self.numOfRows and removed[r + 1][c] == t:
+                        rm_stones[r][c] = StoneType.NONE
+                        if r + 1 < self.numOfRows and rm_stones[r + 1][c] == t:
                             q.put((r + 1, c))
-                        if c + 1 < self.numOfCols and removed[r][c + 1] == t:
+                        if c + 1 < self.numOfCols and rm_stones[r][c + 1] == t:
                             q.put((r, c + 1))
-                        if r - 1 >= 0 and removed[r - 1][c] == t:
+                        if r - 1 >= 0 and rm_stones[r - 1][c] == t:
                             q.put((r - 1, c))
-                        if c - 1 >= 0 and removed[r][c - 1] == t:
+                        if c - 1 >= 0 and rm_stones[r][c - 1] == t:
                             q.put((r, c - 1))
 
             total_rm_count += rm_count
             total_combo += combo
 
             # check if stone dropped
-            for colIdx in range(self.numOfCols):
-                for rowIdx in range(self.numOfRows - 1, 0, -1):
-                    if board[rowIdx][colIdx].type == StoneType.NONE:
-                        for r in range(rowIdx - 1, -1, -1):
-                            if board[r][colIdx].type != StoneType.NONE:
-                                board[rowIdx][colIdx] = board[r][colIdx]
-                                board[r][colIdx] = Runestone()
-                                break
+            temp_tos._dropStones()
 
-            print(self.boardToString(board))
+            print(temp_tos)
         # print("Total Removed: ", total_rm_count)
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo
@@ -157,5 +161,3 @@ if __name__ == "__main__":
     board.initFromFile("input.txt")
     print(board)
     board.evaluate()
-
-    # print(board)
