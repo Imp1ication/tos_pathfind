@@ -74,8 +74,8 @@ class TosBoard:
 
     def evaluate(self):
         # determine if the stone would be removed
-        temp_tos = copy.deepcopy(self)
-        stones = temp_tos.runestones
+        tos_state = copy.deepcopy(self)
+        stones = tos_state.runestones
         rm_stones = [[StoneType.NONE] * self.numOfCols for _ in range(self.numOfRows)]
         total_rm_count = 0
         total_combo = 0
@@ -145,12 +145,12 @@ class TosBoard:
             total_combo += combo
 
             # check if stone dropped
-            temp_tos._dropStones()
+            tos_state._dropStones()
 
-            print(temp_tos)
+            # print(tos_state)
         # print("Total Removed: ", total_rm_count)
         # print("Total Combo: ", total_combo)
-        return total_rm_count, total_combo
+        return total_rm_count, total_combo, tos_state
 
     def calculateScore(self, stones, combo):
         return 100 * ((stones + combo) * 0.25)
@@ -160,4 +160,7 @@ if __name__ == "__main__":
     board = TosBoard()
     board.initFromFile("input.txt")
     print(board)
-    board.evaluate()
+    r, c, b = board.evaluate()
+    print("Total Removed: ", r)
+    print("Total Combo: ", c)
+    print(b)
