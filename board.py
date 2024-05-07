@@ -41,7 +41,10 @@ class TosBoard:
         for rowIdx, colIdx in itertools.product(
             range(self.numOfRows), range(self.numOfCols)
         ):
-            stone = Runestone(random.choice(list(StoneType)))
+            stone_type = list(StoneType)
+            stone_type.remove(StoneType.NONE)
+
+            stone = Runestone(random.choice(stone_type))
             self.runestones[rowIdx][colIdx] = stone
         self.currentPosition = [
             random.randrange(self.numOfRows),
