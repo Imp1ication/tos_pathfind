@@ -77,6 +77,15 @@ class TosBoard:
                     self.runestones[lineIdx][tokenIdx] = stone
 
     # -- Functional Methods --#
+    def count_stones_types(self):
+        stone_counts = defaultdict(int)
+        for row in range(self.numOfRows):
+            for col in range(self.numOfCols):
+                stone_type = self.runestones[row][col].type
+                if stone_type != StoneType.NONE:
+                    stone_counts[stone_type] += 1
+        return stone_counts
+
     def shuffle_stones(self):
         stones = [
             stone.type
