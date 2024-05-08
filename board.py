@@ -96,6 +96,20 @@ class TosBoard:
 
         return new_board
 
+    def extract_sub_board(self, top_left, bottom_right):
+        top_row, left_col = top_left
+        bottom_row, right_col = bottom_right
+
+        sub_board = TosBoard()
+        sub_board.numOfRows = bottom_row - top_row + 1
+        sub_board.numOfCols = right_col - left_col + 1
+        sub_board.runestones = [
+            self.runestones[row][left_col : right_col + 1]
+            for row in range(top_row, bottom_row + 1)
+        ]
+
+        return sub_board
+
     # -- Method to evaluate the board --#
     def eliminate_stones(self):
         # determine if the stone would be removed
