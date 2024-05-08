@@ -177,10 +177,10 @@ class TosBoard:
         # print("Total Combo: ", total_combo)
         return total_rm_count, total_combo, tos_state
 
-    def calculate_score(self, stones, combo):
+    def calc_score(self, stones, combo):
         return 100 * ((stones + combo) * 0.25)
 
-    def calculate_stone_density(self):
+    def calc_stone_density(self):
         stone_positions = defaultdict(list)
 
         # get all stone positions
