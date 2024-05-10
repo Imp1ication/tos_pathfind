@@ -171,7 +171,7 @@ def search_board(_initBoard):
     POPULATION_SIZE = 500
     MUTATION_RATE = 0.6
 
-    MAX_STAGNATION = 40
+    MAX_STAGNATION = MAX_GENERATION // 3
     STOP_THRESHOLD = 0.1
 
     # -- Initialize population -- #
@@ -260,7 +260,8 @@ def search_board(_initBoard):
 
 if __name__ == "__main__":
     initBoard = TosBoard()
-    initBoard.init_from_file("input.txt")
+    # initBoard.init_from_file("input.txt")
+    initBoard.init_from_random()
 
     rm_stones, combo, final_state = initBoard.eliminate_stones()
     score = initBoard.calc_score(rm_stones, combo) - final_state.calc_stone_density()

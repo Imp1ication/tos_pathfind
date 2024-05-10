@@ -38,3 +38,4 @@ class Runestone:
             return "\x1b[0;37;40m H[{}] \x1b[0m".format(self.status)
         if self.type == StoneType.NONE:
             return "\x1b[0;47;30m N[{}] \x1b[0m".format(self.status)
+        return ""

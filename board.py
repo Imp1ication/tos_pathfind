@@ -1,5 +1,5 @@
 import random
-from collections import defaultdict
+from collections import defaultdict, deque
 import copy
 import queue
 import itertools
@@ -239,6 +239,7 @@ class TosBoard:
 
 if __name__ == "__main__":
     board = TosBoard()
+
     board.init_from_file("input2.txt")
 
     print(board)
