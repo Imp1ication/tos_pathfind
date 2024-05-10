@@ -1,11 +1,12 @@
-from board import TosBoard
-import random
 import copy
 import time
-from basic import StoneType, Runestone
-from statistics import mean, stdev
+import random
 import multiprocessing
 from functools import partial
+from statistics import mean, stdev
+
+from tos_board import TosBoard
+from basic import StoneType, Runestone
 
 
 def random_select_rects(rows, cols):
@@ -165,7 +166,7 @@ def parallel_mutate_child(child, mutate_rate):
     return mutated_child
 
 
-def search_board(_initBoard):
+def ga_optimize_board(_initBoard):
     # -- Constants -- #
     MAX_GENERATION = 200
     POPULATION_SIZE = 500
@@ -270,7 +271,7 @@ if __name__ == "__main__":
     print(initBoard)
 
     start_time = time.time()
-    best_indv, best_fit = search_board(initBoard)
+    best_indv, best_fit = ga_optimize_board(initBoard)
     elapsed_time = time.time() - start_time
 
     print("Best Board: ", best_fit)
