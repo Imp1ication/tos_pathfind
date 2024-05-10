@@ -240,6 +240,6 @@ class TosBoard:
 if __name__ == "__main__":
     board = TosBoard()
 
-    board.init_from_file("input2.txt")
+    board.init_from_file("input.txt")
 
     print(board)
