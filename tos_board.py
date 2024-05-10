@@ -1,8 +1,8 @@
 import random
-from collections import defaultdict, deque
 import copy
 import queue
 import itertools
+from collections import defaultdict
 from basic import StoneType, Runestone
 
 
