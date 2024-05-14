@@ -7,14 +7,17 @@ from basic import StoneType, Runestone
 
 
 class TosBoard:
+    BOARD_ROWS = 5
+    BOARD_COLS = 6
+
     def __init__(self):
-        self.numOfRows = 5
-        self.numOfCols = 6
+        self.numOfRows = TosBoard.BOARD_ROWS
+        self.numOfCols = TosBoard.BOARD_COLS
         self.runestones = [
             [Runestone()] * self.numOfCols for _ in range(self.numOfRows)
         ]
-        self.currentPosition = [0, 0]
-        self.previousPosition = self.currentPosition
+        # self.currentPosition = [0, 0]
+        # self.previousPosition = self.currentPosition
 
     def __repr__(self):
         string = ""
