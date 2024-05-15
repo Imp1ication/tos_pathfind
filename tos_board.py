@@ -28,7 +28,7 @@ class TosBoard:
             string = string + "\n"
         return string
 
-    def _drop_stones(self):
+    def drop_stones(self):
         stones = self.runestones
 
         # check if stone dropped
@@ -196,7 +196,7 @@ class TosBoard:
             total_combo += combo
 
             # check if stone dropped
-            tos_state._drop_stones()
+            tos_state.drop_stones()
 
             # print(tos_state)
         # print("Total Removed: ", total_rm_count)
