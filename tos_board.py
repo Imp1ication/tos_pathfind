@@ -127,7 +127,7 @@ class TosBoard:
         if not (
             0 <= start_pos[0] < self.numOfRows and 0 <= start_pos[1] < self.numOfCols
         ):
-            print("Error(move_stone): Invalid start position ", start_pos, ".")
+            # print("Error(move_stone): Invalid start position ", start_pos, ".")
             return False
 
         new_pos = (
@@ -135,7 +135,7 @@ class TosBoard:
             start_pos[1] + move.value[1],
         )
         if not (0 <= new_pos[0] < self.numOfRows and 0 <= new_pos[1] < self.numOfCols):
-            print("Error(move_stone): Invalid adjacent stone position ", new_pos, ".")
+            # print("Error(move_stone): Invalid adjacent stone position ", new_pos, ".")
             return False
 
         # swap the stones
@@ -146,6 +146,29 @@ class TosBoard:
         self.runestones[new_pos[0]][new_pos[1]] = temp
 
         return True
+
+    def get_successor_list(self, start_pos, prev_pos):
+        successor_list = []
+
+        if not (
+            0 <= start_pos[0] < self.numOfRows and 0 <= start_pos[1] < self.numOfCols
+        ):
+            return []
+
+        for move in Move:
+            new_pos = (
+                start_pos[0] + move.value[0],
+                start_pos[1] + move.value[1],
+            )
+
+            if (
+                (0 <= new_pos[0] < self.numOfRows)
+                and (0 <= new_pos[1] < self.numOfCols)
+                and (new_pos != prev_pos)
+            ):
+                successor_list.append(move)
+
+        return successor_list
 
     # -- Method to evaluate the board --#
     def eliminate_stones(self):
@@ -270,5 +293,4 @@ if __name__ == "__main__":
 
     board.init_from_file("input.txt")
 
-    print(board)
     print(board)
