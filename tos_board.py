@@ -144,6 +144,7 @@ class TosBoard:
             new_pos[1]
         ]
         self.runestones[new_pos[0]][new_pos[1]] = temp
+        self.runestones[new_pos[0]][new_pos[1]].status = "*"
 
         return True
 
