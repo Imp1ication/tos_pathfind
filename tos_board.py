@@ -3,7 +3,7 @@ import copy
 import queue
 import itertools
 from collections import defaultdict
-from basic import StoneType, Runestone
+from basic import Move, StoneType, Runestone
 
 
 class TosBoard:
@@ -27,19 +27,6 @@ class TosBoard:
                 string = string + str(stone)
             string = string + "\n"
         return string
-
-    def drop_stones(self):
-        stones = self.runestones
-
-        # check if stone dropped
-        for colIdx in range(self.numOfCols):
-            for rowIdx in range(self.numOfRows - 1, 0, -1):
-                if stones[rowIdx][colIdx].type == StoneType.NONE:
-                    for r in range(rowIdx - 1, -1, -1):
-                        if stones[r][colIdx].type != StoneType.NONE:
-                            stones[rowIdx][colIdx] = stones[r][colIdx]
-                            stones[r][colIdx] = Runestone()
-                            break
 
     def init_from_random(self):
         for rowIdx, colIdx in itertools.product(
@@ -121,6 +108,44 @@ class TosBoard:
         ]
 
         return sub_board
+
+    def drop_stones(self):
+        stones = self.runestones
+
+        # check if stone dropped
+        for colIdx in range(self.numOfCols):
+            for rowIdx in range(self.numOfRows - 1, 0, -1):
+                if stones[rowIdx][colIdx].type == StoneType.NONE:
+                    for r in range(rowIdx - 1, -1, -1):
+                        if stones[r][colIdx].type != StoneType.NONE:
+                            stones[rowIdx][colIdx] = stones[r][colIdx]
+                            stones[r][colIdx] = Runestone()
+                            break
+
+    def move_stone(self, start_pos, move):
+        # check if input is valid
+        if not (
+            0 <= start_pos[0] < self.numOfRows and 0 <= start_pos[1] < self.numOfCols
+        ):
+            print("Error(move_stone): Invalid start position ", start_pos, ".")
+            return False
+
+        new_pos = (
+            start_pos[0] + move.value[0],
+            start_pos[1] + move.value[1],
+        )
+        if not (0 <= new_pos[0] < self.numOfRows and 0 <= new_pos[1] < self.numOfCols):
+            print("Error(move_stone): Invalid adjacent stone position ", new_pos, ".")
+            return False
+
+        # swap the stones
+        temp = self.runestones[start_pos[0]][start_pos[1]]
+        self.runestones[start_pos[0]][start_pos[1]] = self.runestones[new_pos[0]][
+            new_pos[1]
+        ]
+        self.runestones[new_pos[0]][new_pos[1]] = temp
+
+        return True
 
     # -- Method to evaluate the board --#
     def eliminate_stones(self):
@@ -245,4 +270,5 @@ if __name__ == "__main__":
 
     board.init_from_file("input.txt")
 
+    print(board)
     print(board)
