@@ -49,7 +49,7 @@ class TosBoard:
         with open(_filePath, "r") as fin:
             for lineIdx, line in enumerate(fin):
                 tokenList = line.strip().split()
-                if len(tokenList) != 6:
+                if len(tokenList) != self.numOfCols:
                     continue
                 for tokenIdx, token in enumerate(tokenList):
                     stone = Runestone()
@@ -293,6 +293,6 @@ class TosBoard:
 if __name__ == "__main__":
     board = TosBoard()
 
-    board.init_from_file("input.txt")
+    board.init_from_file(cfg.INPUT_FILE_NAME)
 
     print(board)
