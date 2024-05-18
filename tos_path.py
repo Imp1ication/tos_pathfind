@@ -6,24 +6,29 @@ import config as cfg
 
 
 class TosPath:
-    def __init__(self, steps=0, start_pos=(0, 0), path=[]):
+    def __init__(self, steps=cfg.PATH_PARAMS.max_steps, start_pos=(0, 0), path=[]):
         self.steps = steps
         self.start_pos = start_pos
         self.path = path
 
-    def init_from_random(self, steps, start_pos=None):
-        self.steps = steps
-
-        if start_pos is not None:
-            self.start_pos = start_pos
+    def init_from_random(self, steps=None, start_pos=None):
+        if steps is None:
+            self.steps = random.randint(
+                cfg.PATH_PARAMS.max_steps // 2, cfg.PATH_PARAMS.max_steps
+            )
         else:
+            self.steps = steps
+
+        if start_pos is None:
             self.start_pos = (
                 random.randint(0, cfg.BOARD_PARAMS.rows - 1),
                 random.randint(0, cfg.BOARD_PARAMS.cols - 1),
             )
+        else:
+            self.start_pos = start_pos
 
         # Generate path (Gamestates)
-        self.path = [random.randint(0, len(Move) - 1 - 1) for _ in range(steps)]
+        self.path = [random.randint(0, len(Move) - 1 - 1) for _ in range(self.steps)]
         return
 
     def run_path(self, tos_board):
