@@ -1,8 +1,8 @@
 import random
 import copy
-from sre_constants import JUMP
-from basic import Move, StoneType, Runestone
+from basic import Move
 from board_optimize import TosBoard
+import config as cfg
 
 
 class TosPath:
@@ -18,8 +18,8 @@ class TosPath:
             self.start_pos = start_pos
         else:
             self.start_pos = (
-                random.randint(0, TosBoard.BOARD_ROWS - 1),
-                random.randint(0, TosBoard.BOARD_COLS - 1),
+                random.randint(0, cfg.BOARD_PARAMS.rows - 1),
+                random.randint(0, cfg.BOARD_PARAMS.cols - 1),
             )
 
         # Generate path (Gamestates)
@@ -28,6 +28,7 @@ class TosPath:
 
     def run_path(self, tos_board):
         board = copy.deepcopy(tos_board)
+        move_steps = []
 
         current_pos = self.start_pos
         prev_pos = self.start_pos
@@ -36,23 +37,23 @@ class TosPath:
             successor_list = board.get_successor_list(current_pos, prev_pos)
             state = self.path[i] % len(successor_list)
             move = successor_list[state]
+            move_steps.append(move)
 
             board.move_stone(current_pos, move)
             prev_pos = current_pos
-            current_pos = (
-                prev_pos[0] + move.value[0],
-                prev_pos[1] + move.value[1],
-            )
+            current_pos = tuple(sum(x) for x in zip(current_pos, move.value))
 
-        return board
+        return board, move_steps
 
 
 if __name__ == "__main__":
     board = TosBoard()
-    board.init_from_file("input.txt")
+    board.init_from_file(cfg.INPUT_FILE_NAME)
 
     path = TosPath()
-    path.init_from_random(5, (0, 0))
+    path.init_from_random(15, (0, 0))
     print(path.path)
 
-    path.run_path(board)
+    print(board)
+    new_board, move_steps = path.run_path(board)
+    print(new_board)

@@ -4,15 +4,16 @@ import queue
 import itertools
 from collections import defaultdict
 from basic import Move, StoneType, Runestone
+import config as cfg
 
 
 class TosBoard:
-    BOARD_ROWS = 5
+    # BOARD_ROWS = 5
     BOARD_COLS = 6
 
     def __init__(self):
-        self.numOfRows = TosBoard.BOARD_ROWS
-        self.numOfCols = TosBoard.BOARD_COLS
+        self.numOfRows = cfg.BOARD_PARAMS.rows
+        self.numOfCols = cfg.BOARD_PARAMS.cols
         self.runestones = [
             [Runestone()] * self.numOfCols for _ in range(self.numOfRows)
         ]

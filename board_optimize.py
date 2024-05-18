@@ -7,6 +7,7 @@ from statistics import mean, stdev
 
 from tos_board import TosBoard
 from basic import StoneType, Runestone
+import config as cfg
 
 
 def random_select_rects(rows, cols):
@@ -167,20 +168,12 @@ def parallel_mutate_child(child, mutate_rate):
 
 
 def ga_optimize_board(_initBoard):
-    # -- Constants -- #
-    MAX_GENERATION = 200
-    POPULATION_SIZE = 500
-    MUTATION_RATE = 0.6
-
-    MAX_STAGNATION = MAX_GENERATION // 3
-    STOP_THRESHOLD = 0.1
-
     # -- Initialize population -- #
     population = []
     fitness = []
 
     population.append(copy.deepcopy(_initBoard))
-    for _ in range(POPULATION_SIZE - 1):
+    for _ in range(cfg.BOARD_PARAMS.population_size - 1):
         population.append(_initBoard.shuffle_stones())
 
     # -- Evaluate population -- #
@@ -190,12 +183,12 @@ def ga_optimize_board(_initBoard):
     stagnation_count = 0
     prev_max_fitness = 0
 
-    for gen in range(MAX_GENERATION):
+    for gen in range(cfg.BOARD_PARAMS.max_generation):
         # print("Generation: ", gen)
         child = []
         child_fitness = []
 
-        for _ in range(int(POPULATION_SIZE / 2)):
+        for _ in range(int(cfg.BOARD_PARAMS.population_size / 2)):
             # -- Matting Selection -- #
             parent1 = two_tournament_selection(population, fitness)
             parent2 = two_tournament_selection(population, fitness)
@@ -213,7 +206,7 @@ def ga_optimize_board(_initBoard):
             child.append(child2)
 
         # -- Mutation -- #
-        child = parallel_mutate_child(child, MUTATION_RATE)
+        child = parallel_mutate_child(child, cfg.BOARD_PARAMS.mutation_rate)
 
         # -- Evaluate child -- #
         child_fitness = parallel_eval_pop_fitness(child)
@@ -224,8 +217,8 @@ def ga_optimize_board(_initBoard):
         combined = list(zip(population + child, fitness + child_fitness))
         sorted_combined = sorted(combined, key=lambda x: x[1], reverse=True)
 
-        population = [x[0] for x in sorted_combined[:POPULATION_SIZE]]
-        fitness = [x[1] for x in sorted_combined[:POPULATION_SIZE]]
+        population = [x[0] for x in sorted_combined[: cfg.BOARD_PARAMS.population_size]]
+        fitness = [x[1] for x in sorted_combined[: cfg.BOARD_PARAMS.population_size]]
 
         max_fitness = round(max(fitness), 3)
         min_fitness = round(min(fitness), 3)
@@ -243,13 +236,13 @@ def ga_optimize_board(_initBoard):
             std_dev_fitness,
         )
 
-        if std_dev_fitness <= STOP_THRESHOLD:
+        if std_dev_fitness <= cfg.BOARD_PARAMS.stop_threshold:
             print("Stopping early: Converged due to low diversity.")
             break
 
         if max_fitness == prev_max_fitness:
             stagnation_count += 1
-            if stagnation_count >= MAX_STAGNATION:
+            if stagnation_count >= cfg.BOARD_PARAMS.max_stagnation:
                 print("Stopping early: Converged due to stagnation.")
                 break
         else:
@@ -261,8 +254,8 @@ def ga_optimize_board(_initBoard):
 
 if __name__ == "__main__":
     initBoard = TosBoard()
-    # initBoard.init_from_file("input.txt")
-    initBoard.init_from_random()
+    initBoard.init_from_file(cfg.INPUT_FILE_NAME)
+    # initBoard.init_from_random()
 
     rm_stones, combo, final_state = initBoard.eliminate_stones()
     score = initBoard.calc_score(rm_stones, combo) - final_state.calc_stone_density()
