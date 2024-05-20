@@ -22,4 +22,6 @@ PATH_PARAMS = SimpleNamespace(
     # -- Genetic Algorithm -- #
     max_generation=1,
     pupulation_size=5,
+    diff_weight=1.0,
+    step_weight=0.5,
 )
