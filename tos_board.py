@@ -8,9 +8,6 @@ import config as cfg
 
 
 class TosBoard:
-    # BOARD_ROWS = 5
-    BOARD_COLS = 6
-
     def __init__(self):
         self.numOfRows = cfg.BOARD_PARAMS.rows
         self.numOfCols = cfg.BOARD_PARAMS.cols
@@ -288,6 +285,17 @@ class TosBoard:
 
         # add up all average distances
         return sum(avg_distances.values())
+
+    def calc_board_diff(self, target_board):
+        diff = 0
+        for row in range(self.numOfRows):
+            for col in range(self.numOfCols):
+                if (
+                    self.runestones[row][col].type
+                    != target_board.runestones[row][col].type
+                ):
+                    diff += 1
+        return diff
 
 
 if __name__ == "__main__":
