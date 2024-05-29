@@ -18,10 +18,13 @@ BOARD_PARAMS = SimpleNamespace(
 
 PATH_PARAMS = SimpleNamespace(
     # -- Path -- #
-    max_steps=5,
+    max_steps=500,
+    diff_weight=10.0,
+    step_weight=1.0,
     # -- Genetic Algorithm -- #
-    max_generation=1,
-    population_size=5,
-    diff_weight=1.0,
-    step_weight=0.5,
+    max_generation=500,
+    population_size=500,
+    mutation_rate=0.9,
+    max_stagnation=65,
+    stop_threshold=0.1,
 )

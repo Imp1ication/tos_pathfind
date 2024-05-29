@@ -134,15 +134,19 @@ def mutate_board(board, mutate_point1, mutate_point2, right_shift, down_shift):
     return new_board
 
 
-def parallel_eval_fitness(board):
+def parallel_eval_fitness(board, _initBoard):
+    diff = board.calc_board_diff(_initBoard)
     rm_stones, combo, final_state = board.eliminate_stones()
-    score = board.calc_score(rm_stones, combo) - final_state.calc_stone_density()
+
+    score = board.calc_score(rm_stones, combo) - final_state.calc_stone_density() - diff
     return score
 
 
-def parallel_eval_pop_fitness(population):
+def parallel_eval_pop_fitness(population, _initBoard):
     with multiprocessing.Pool() as pool:
-        fitness_scores = pool.map(parallel_eval_fitness, population)
+        fitness_scores = pool.map(
+            partial(parallel_eval_fitness, _initBoard=_initBoard), population
+        )
     return fitness_scores
 
 
@@ -177,7 +181,7 @@ def ga_optimize_board(_initBoard):
         population.append(_initBoard.shuffle_stones())
 
     # -- Evaluate population -- #
-    fitness = parallel_eval_pop_fitness(population)
+    fitness = parallel_eval_pop_fitness(population, _initBoard)
 
     # -- Evolution -- #
     stagnation_count = 0
@@ -209,11 +213,9 @@ def ga_optimize_board(_initBoard):
         child = parallel_mutate_child(child, cfg.BOARD_PARAMS.mutation_rate)
 
         # -- Evaluate child -- #
-        child_fitness = parallel_eval_pop_fitness(child)
+        child_fitness = parallel_eval_pop_fitness(child, _initBoard)
 
         # -- Selection -- #
-        # combined_population = population + child
-        # combined_fitness = fitness + child_fitness
         combined = list(zip(population + child, fitness + child_fitness))
         sorted_combined = sorted(combined, key=lambda x: x[1], reverse=True)
 

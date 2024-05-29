@@ -28,8 +28,16 @@ class TosPath:
             self.start_pos = start_pos
 
         # Generate path (Gamestates)
-        self.path = [random.randint(0, len(Move) - 1 - 1) for _ in range(self.steps)]
+        # self.path = [random.randint(0, len(Move) - 1 - 1) for _ in range(self.steps)]
+        self.path = [random.uniform(0, 1) for _ in range(self.steps)]
         return
+
+    def extract_sub_path(self, left, right):
+        if not (0 <= left <= right < self.steps):
+            print("Error(extract_sub_path): Invalid range.")
+            return None
+
+        return self.path[left : (right + 1)]
 
     def run_path(self, tos_board):
         board = copy.deepcopy(tos_board)
@@ -40,7 +48,9 @@ class TosPath:
 
         for i in range(self.steps):
             successor_list = board.get_successor_list(current_pos, prev_pos)
-            state = self.path[i] % len(successor_list)
+            num_successors = len(successor_list)
+            state = int(self.path[i] * num_successors) % num_successors
+
             move = successor_list[state]
             move_steps.append(move)
 
