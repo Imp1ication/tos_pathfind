@@ -13,7 +13,11 @@ BOARD_PARAMS = SimpleNamespace(
     population_size=500,
     mutation_rate=0.6,
     max_stagnation=65,
-    stop_threshold=0.1,
+    stop_threshold=0.001,
+    # -- Fitness weight -- #
+    score_weight=1.0,
+    dist_weight=0.2,
+    density_weight=0.2,
 )
 
 PATH_PARAMS = SimpleNamespace(
@@ -22,7 +26,7 @@ PATH_PARAMS = SimpleNamespace(
     diff_weight=10.0,
     step_weight=1.0,
     # -- Genetic Algorithm -- #
-    max_generation=500,
+    max_generation=200,
     population_size=500,
     mutation_rate=0.9,
     max_stagnation=65,

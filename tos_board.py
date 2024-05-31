@@ -8,6 +8,11 @@ import config as cfg
 
 
 class TosBoard:
+    MAX_SCORE = (30 + 10) * 0.25 * 100
+    MAX_DENSITY = 6 * 9
+    MAX_DIFF = 30
+    MAX_DIST = 30 * 9
+
     def __init__(self):
         self.numOfRows = cfg.BOARD_PARAMS.rows
         self.numOfCols = cfg.BOARD_PARAMS.cols
@@ -251,7 +256,7 @@ class TosBoard:
         return total_rm_count, total_combo, tos_state
 
     def calc_score(self, stones, combo):
-        return 100 * ((stones + combo) * 0.25)
+        return 100 * ((stones + combo) * 0.25) / self.MAX_SCORE
 
     def calc_stone_density(self):
         stone_positions = defaultdict(list)
@@ -284,7 +289,7 @@ class TosBoard:
         #     print(f"Average distance for {stone_type}: {avg_distance}")
 
         # add up all average distances
-        return sum(avg_distances.values())
+        return sum(avg_distances.values()) / self.MAX_DENSITY
 
     def calc_board_diff(self, target_board):
         diff = 0
@@ -295,12 +300,45 @@ class TosBoard:
                     != target_board.runestones[row][col].type
                 ):
                     diff += 1
-        return diff
+        return diff / self.MAX_DIFF
+
+    def calc_board_dist(self, target_board):
+        total_dist = 0
+        temp_board = copy.deepcopy(target_board.runestones)
+
+        for row, col in itertools.product(range(self.numOfRows), range(self.numOfCols)):
+            stone_type = self.runestones[row][col].type
+
+            if stone_type == StoneType.NONE:
+                continue
+
+            min_dist = float("inf")
+            min_pos = None
+
+            for row2, col2 in itertools.product(
+                range(self.numOfRows), range(self.numOfCols)
+            ):
+                if temp_board[row2][col2].type == stone_type:
+                    dist = abs(row - row2) + abs(col - col2)
+                    if dist < min_dist:
+                        min_dist = dist
+                        min_pos = (row2, col2)
+
+            if min_pos is not None:
+                total_dist += min_dist
+                temp_board[min_pos[0]][min_pos[1]] = Runestone()
+
+        return total_dist / self.MAX_DIST
 
 
 if __name__ == "__main__":
     board = TosBoard()
+    board.init_from_file("input2.txt")
 
-    board.init_from_file(cfg.INPUT_FILE_NAME)
+    board2 = TosBoard()
+    board2.init_from_file("input3.txt")
 
     print(board)
+    print(board2)
+
+    dist = board.calc_board_dist(board2)
