@@ -1,3 +1,4 @@
+import os
 import copy
 import time
 import random
@@ -178,7 +179,7 @@ def parallel_mutate_child(child, mutate_rate):
     return mutated_child
 
 
-def ga_optimize_board(_initBoard):
+def ga_optimize_board(_initBoard, _logFile):
     # -- Initialize population -- #
     population = []
     fitness = []
@@ -193,6 +194,7 @@ def ga_optimize_board(_initBoard):
     # -- Evolution -- #
     stagnation_count = 0
     prev_max_fitness = 0
+    log_file = open(_logFile, "w")
 
     for gen in range(BP.max_generation):
         # print("Generation: ", gen)
@@ -245,7 +247,11 @@ def ga_optimize_board(_initBoard):
             std_dev_fitness,
         )
 
-        if std_dev_fitness <= BP.stop_threshold:
+        log_file.write(
+            f"{max_fitness} {mean_fitness} {min_fitness} {std_dev_fitness}\n"
+        )
+
+        if std_dev_fitness < BP.stop_threshold:
             print("Stopping early: Converged due to low diversity.")
             break
 
@@ -258,27 +264,57 @@ def ga_optimize_board(_initBoard):
             stagnation_count = 0
             prev_max_fitness = max_fitness
 
+    log_file.close()
     return population[0], fitness[0]
 
 
+def mutate_exper():
+    LOG_DIR = "./bp_log/"
+    input_files = os.listdir(cfg.INPUT_FILE_DIR)
+
+    for i in range(1, 10, 2):
+        BP.mutation_rate = round(i * 0.1, 1)
+
+        for file in input_files:
+            if not file.endswith(".txt"):
+                continue
+
+            log_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
+            log_file_name = os.path.join(LOG_DIR, log_file_name)
+
+            initBoard = TosBoard()
+            initBoard.init_from_file(cfg.INPUT_FILE_DIR + file)
+
+            start_time = time.time()
+            best_indv, best_fit = ga_optimize_board(initBoard, log_file_name)
+            elapsed_time = time.time() - start_time
+
+            with open(log_file_name, "a") as log_file:
+                log_file.write(f"{elapsed_time}\n{best_fit}\n\n")
+
+            best_indv.save_to_file(log_file_name)
+    return
+
+
 if __name__ == "__main__":
-    initBoard = TosBoard()
-    initBoard.init_from_file(cfg.INPUT_FILE_NAME)
-    # initBoard.init_from_random()
+    LOG_DIR = "./bp_log/"
+    mutate_exper()
 
-    rm_stones, combo, final_state = initBoard.eliminate_stones()
-    score = initBoard.calc_score(rm_stones, combo) - final_state.calc_stone_density()
+    # initBoard = TosBoard()
+    # initBoard.init_from_file(cfg.INPUT_FILE_NAME)
+    # # initBoard.init_from_random()
 
-    print("Init Board: ", score)
-    print(initBoard)
+    # rm_stones, combo, final_state = initBoard.eliminate_stones()
+    # score = initBoard.calc_score(rm_stones, combo) - final_state.calc_stone_density()
 
-    start_time = time.time()
-    best_indv, best_fit = ga_optimize_board(initBoard)
-    elapsed_time = time.time() - start_time
+    # print("Init Board: ", score)
+    # print(initBoard)
 
-    print("Best Board: ", best_fit)
-    print(best_indv)
+    # start_time = time.time()
+    # best_indv, best_fit = ga_optimize_board(initBoard, "test.txt")
+    # elapsed_time = time.time() - start_time
 
-    print("Runtime: ", elapsed_time)
+    # print("Best Board: ", best_fit)
+    # print(best_indv)
 
-    # search_board(initBoard)
+    # print("Runtime: ", elapsed_time)

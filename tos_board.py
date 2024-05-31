@@ -1,3 +1,4 @@
+import os
 import random
 import copy
 import queue
@@ -68,6 +69,27 @@ class TosBoard:
                     if token == "H":
                         stone = Runestone(StoneType.HEALTH)
                     self.runestones[lineIdx][tokenIdx] = stone
+
+    def save_to_file(self, file_path):
+        with open(file_path, "a") as fout:
+            for row in range(self.numOfRows):
+                for col in range(self.numOfCols):
+                    stone = self.runestones[row][col]
+                    if stone.type == StoneType.DARK:
+                        fout.write("D ")
+                    elif stone.type == StoneType.LIGHT:
+                        fout.write("L ")
+                    elif stone.type == StoneType.WATER:
+                        fout.write("W ")
+                    elif stone.type == StoneType.FIRE:
+                        fout.write("F ")
+                    elif stone.type == StoneType.EARTH:
+                        fout.write("E ")
+                    elif stone.type == StoneType.HEALTH:
+                        fout.write("H ")
+                    else:
+                        fout.write("N ")
+                fout.write("\n")
 
     # -- Functional Methods --#
     def count_stones_types(self):
@@ -333,12 +355,3 @@ class TosBoard:
 
 if __name__ == "__main__":
     board = TosBoard()
-    board.init_from_file("input2.txt")
-
-    board2 = TosBoard()
-    board2.init_from_file("input3.txt")
-
-    print(board)
-    print(board2)
-
-    dist = board.calc_board_dist(board2)

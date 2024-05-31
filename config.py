@@ -2,7 +2,8 @@ from types import SimpleNamespace
 
 
 # random initizlized if inputFileName = None
-INPUT_FILE_NAME = "./input.txt"
+INPUT_FILE_DIR = "./input/"
+INPUT_FILE_NAME = INPUT_FILE_DIR + "board15.txt"
 
 BOARD_PARAMS = SimpleNamespace(
     # -- Board -- #
