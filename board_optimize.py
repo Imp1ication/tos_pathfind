@@ -298,7 +298,7 @@ def mutate_exper():
 
 if __name__ == "__main__":
     LOG_DIR = "./bp_log/"
-    mutate_exper()
+    # mutate_exper()
 
     # initBoard = TosBoard()
     # initBoard.init_from_file(cfg.INPUT_FILE_NAME)
