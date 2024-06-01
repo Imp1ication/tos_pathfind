@@ -12,7 +12,7 @@ class TosBoard:
     MAX_SCORE = (30 + 10) * 0.25 * 100
     MAX_DENSITY = 6 * 9
     MAX_DIFF = 30
-    MAX_DIST = 30 * 9
+    MAX_DIST = 30 * 4.5
 
     def __init__(self):
         self.numOfRows = cfg.BOARD_PARAMS.rows

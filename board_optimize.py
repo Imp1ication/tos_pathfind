@@ -195,6 +195,7 @@ def ga_optimize_board(_initBoard, _logFile):
     stagnation_count = 0
     prev_max_fitness = 0
     log_file = open(_logFile, "w")
+    final_log_string = ""
 
     for gen in range(BP.max_generation):
         # print("Generation: ", gen)
@@ -231,24 +232,27 @@ def ga_optimize_board(_initBoard, _logFile):
         population = [x[0] for x in sorted_combined[: BP.population_size]]
         fitness = [x[1] for x in sorted_combined[: BP.population_size]]
 
-        max_fitness = round(max(fitness), 3)
-        min_fitness = round(min(fitness), 3)
-        mean_fitness = round(mean(fitness), 3)
-        std_dev_fitness = round(stdev(fitness), 3)
+        max_fitness = max(fitness)
+        min_fitness = min(fitness)
+        mean_fitness = mean(fitness)
+        std_dev_fitness = stdev(fitness)
         print(
             gen,
             ": ",
-            max_fitness,
+            round(max_fitness, 3),
             "/",
-            mean_fitness,
+            round(mean_fitness, 3),
             "/",
-            min_fitness,
+            round(min_fitness, 3),
             "/",
             std_dev_fitness,
         )
 
         log_file.write(
             f"{max_fitness} {mean_fitness} {min_fitness} {std_dev_fitness}\n"
+        )
+        final_log_string = (
+            f"{max_fitness} {mean_fitness} {min_fitness} {std_dev_fitness} "
         )
 
         if std_dev_fitness < BP.stop_threshold:
@@ -265,40 +269,57 @@ def ga_optimize_board(_initBoard, _logFile):
             prev_max_fitness = max_fitness
 
     log_file.close()
-    return population[0], fitness[0]
+    return population[0], fitness[0], final_log_string
 
 
 def mutate_exper():
     LOG_DIR = "./bp_log/"
+    LOG_RESULT = "./bp_log/result/"
     input_files = os.listdir(cfg.INPUT_FILE_DIR)
 
     for i in range(1, 10, 2):
         BP.mutation_rate = round(i * 0.1, 1)
-
         for file in input_files:
             if not file.endswith(".txt"):
                 continue
 
-            log_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
-            log_file_name = os.path.join(LOG_DIR, log_file_name)
+            for _ in range(20):
+                log_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
+                log_file_name = os.path.join(LOG_DIR, log_file_name)
 
-            initBoard = TosBoard()
-            initBoard.init_from_file(cfg.INPUT_FILE_DIR + file)
+                result_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
+                result_file_name = os.path.join(LOG_RESULT, result_file_name)
 
-            start_time = time.time()
-            best_indv, best_fit = ga_optimize_board(initBoard, log_file_name)
-            elapsed_time = time.time() - start_time
+                initBoard = TosBoard()
+                initBoard.init_from_file(cfg.INPUT_FILE_DIR + file)
 
-            with open(log_file_name, "a") as log_file:
-                log_file.write(f"{elapsed_time}\n{best_fit}\n\n")
+                start_time = time.time()
+                best_indv, best_fit, result_log_string = ga_optimize_board(
+                    initBoard, log_file_name
+                )
+                elapsed_time = time.time() - start_time
 
-            best_indv.save_to_file(log_file_name)
+                result_log_string += f"{elapsed_time}\n"
+
+                log_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
+                log_file_name = os.path.join(LOG_DIR, log_file_name)
+
+                result_file_name = f"{file.split('.')[0]}_{BP.mutation_rate}.txt"
+                result_file_name = os.path.join(LOG_RESULT, result_file_name)
+
+                with open(log_file_name, "a") as log_file:
+                    log_file.write(f"{elapsed_time}\n{best_fit}\n\n")
+
+                with open(result_file_name, "a") as log_file:
+                    log_file.write(result_log_string)
+
+                best_indv.save_to_file(log_file_name)
     return
 
 
 if __name__ == "__main__":
     LOG_DIR = "./bp_log/"
-    # mutate_exper()
+    mutate_exper()
 
     # initBoard = TosBoard()
     # initBoard.init_from_file(cfg.INPUT_FILE_NAME)
