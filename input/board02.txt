@@ -1,0 +1,5 @@
+W F W F W F
+F F W F F W
+F F F F W W
+W W W F W F
+W F W W W F
