@@ -1,8 +1,8 @@
 import random
 import copy
-from basic import Move
-from board_optimize import TosBoard
+
 import config as cfg
+from tos_board import TosBoard
 
 
 class TosPath:
@@ -13,9 +13,7 @@ class TosPath:
 
     def init_from_random(self, steps=None, start_pos=None):
         if steps is None:
-            self.steps = random.randint(
-                cfg.PATH_PARAMS.max_steps // 2, cfg.PATH_PARAMS.max_steps
-            )
+            self.steps = random.randint(5, cfg.PATH_PARAMS.max_steps)
         else:
             self.steps = steps
 
@@ -52,7 +50,7 @@ class TosPath:
             state = int(self.path[i] * num_successors) % num_successors
 
             move = successor_list[state]
-            move_steps.append(move)
+            move_steps.append(move.name)
 
             board.move_stone(current_pos, move)
             prev_pos = current_pos
@@ -72,3 +70,4 @@ if __name__ == "__main__":
     print(board)
     new_board, move_steps = path.run_path(board)
     print(new_board)
+    print(move_steps)

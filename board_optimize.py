@@ -151,7 +151,7 @@ def parallel_eval_fitness(board, _initBoard):
 
 
 def parallel_eval_pop_fitness(population, _initBoard):
-    with multiprocessing.Pool() as pool:
+    with multiprocessing.Pool(processes=cfg.GA_CORES) as pool:
         fitness_scores = pool.map(
             partial(parallel_eval_fitness, _initBoard=_initBoard), population
         )
@@ -172,7 +172,7 @@ def parallel_mutate_children(board, mutate_rate):
 
 
 def parallel_mutate_child(child, mutate_rate):
-    with multiprocessing.Pool() as pool:
+    with multiprocessing.Pool(processes=cfg.GA_CORES) as pool:
         mutated_child = pool.map(
             partial(parallel_mutate_children, mutate_rate=mutate_rate), child
         )
@@ -236,17 +236,18 @@ def ga_optimize_board(_initBoard, _logFile):
         min_fitness = min(fitness)
         mean_fitness = mean(fitness)
         std_dev_fitness = stdev(fitness)
-        print(
-            gen,
-            ": ",
-            round(max_fitness, 3),
-            "/",
-            round(mean_fitness, 3),
-            "/",
-            round(min_fitness, 3),
-            "/",
-            std_dev_fitness,
-        )
+        if gen % 100 == 0:
+            print(
+                gen,
+                ": ",
+                round(max_fitness, 3),
+                "/",
+                round(mean_fitness, 3),
+                "/",
+                round(min_fitness, 3),
+                "/",
+                std_dev_fitness,
+            )
 
         log_file.write(
             f"{max_fitness} {mean_fitness} {min_fitness} {std_dev_fitness}\n"
@@ -259,7 +260,7 @@ def ga_optimize_board(_initBoard, _logFile):
             print("Stopping early: Converged due to low diversity.")
             break
 
-        if max_fitness == prev_max_fitness:
+        if round(max_fitness, 3) == round(prev_max_fitness, 3):
             stagnation_count += 1
             if stagnation_count >= BP.max_stagnation:
                 print("Stopping early: Converged due to stagnation.")
@@ -318,7 +319,6 @@ def mutate_exper():
 
 
 if __name__ == "__main__":
-    LOG_DIR = "./bp_log/"
     mutate_exper()
 
     # initBoard = TosBoard()

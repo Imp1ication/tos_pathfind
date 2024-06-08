@@ -1,4 +1,3 @@
-import os
 import random
 import copy
 import queue
@@ -31,6 +30,29 @@ class TosBoard:
                 string = string + str(stone)
             string = string + "\n"
         return string
+
+    def __str__(self):
+        result = []
+        for row in range(self.numOfRows):
+            row_str = []
+            for col in range(self.numOfCols):
+                stone = self.runestones[row][col]
+                if stone.type == StoneType.DARK:
+                    row_str.append("D ")
+                elif stone.type == StoneType.LIGHT:
+                    row_str.append("L ")
+                elif stone.type == StoneType.WATER:
+                    row_str.append("W ")
+                elif stone.type == StoneType.FIRE:
+                    row_str.append("F ")
+                elif stone.type == StoneType.EARTH:
+                    row_str.append("E ")
+                elif stone.type == StoneType.HEALTH:
+                    row_str.append("H ")
+                else:
+                    row_str.append("N ")
+            result.append("".join(row_str).strip())
+        return "\n".join(result)
 
     def init_from_random(self):
         for rowIdx, colIdx in itertools.product(
@@ -71,7 +93,7 @@ class TosBoard:
                     self.runestones[lineIdx][tokenIdx] = stone
 
     def save_to_file(self, file_path):
-        with open(file_path, "a") as fout:
+        with open(file_path, "w") as fout:
             for row in range(self.numOfRows):
                 for col in range(self.numOfCols):
                     stone = self.runestones[row][col]
@@ -355,3 +377,5 @@ class TosBoard:
 
 if __name__ == "__main__":
     board = TosBoard()
+    board.init_from_file(cfg.INPUT_FILE_NAME)
+    print(board)
